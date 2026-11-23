@@ -19,5 +19,5 @@ Saat ditanya Framework Preset pilih "Other"; Build Command dan Output Directory 
 3. Framework Preset: Other. Klik Deploy.
 
 ## Catatan
-- Pustaka jsPDF dan autotable sudah disertakan di folder `lib/`, jadi tidak bergantung pada CDN.
+- Pustaka jsPDF dan autotable sudah ditanam di dalam `index.html`, jadi cukup satu file dan tidak bergantung pada CDN.
 - Riwayat quotation dan profil perusahaan disimpan di localStorage browser. Gunakan tombol Ekspor/Impor untuk memindahkan data antar perangkat.
