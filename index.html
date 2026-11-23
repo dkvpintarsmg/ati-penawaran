@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pembuat Quotation PDF</title>
+<style>
+:root{--bg:#f3f5f9;--card:#fff;--ink:#16202e;--mut:#5b6678;--line:#d5dcea;--navy:#002b66;--on:#fff;--soft:#e4ecfa;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1520;--card:#172033;--ink:#e8edf6;--mut:#9aa7bd;--line:#2a3652;--navy:#6a97f0;--on:#0b1220;--soft:#1f2d4a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1520;--card:#172033;--ink:#e8edf6;--mut:#9aa7bd;--line:#2a3652;--navy:#6a97f0;--on:#0b1220;--soft:#1f2d4a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:var(--navy);color:var(--on);padding:22px 20px}
+header h1{margin:0;font-size:22px;letter-spacing:.04em}
+header p{margin:4px 0 0;opacity:.85;font-size:13px}
+main{max-width:980px;margin:0 auto;padding:16px;display:grid;gap:14px}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+h2{margin:0 0 12px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--navy)}
+.g{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+label{display:grid;gap:4px;font-size:12px;color:var(--mut)}
+input,textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+input:focus,textarea:focus{outline:2px solid var(--navy);outline-offset:-1px}
+textarea{resize:vertical}
+.item{border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:10px;display:grid;gap:10px}
+.ih{display:flex;justify-content:space-between;align-items:center}
+button{font:inherit;cursor:pointer;border-radius:6px;border:1px solid var(--navy);background:transparent;color:var(--navy);padding:7px 12px}
+button.p{background:var(--navy);color:var(--on);font-weight:600;padding:12px 20px;font-size:16px}
+.chk{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--ink)}
+.chk input{width:auto}
+.tot{background:var(--soft);border-radius:8px;padding:12px;display:grid;gap:4px;font-variant-numeric:tabular-nums}
+.tot div{display:flex;justify-content:space-between;gap:12px}
+.tot .gt{font-weight:700;border-top:1px solid var(--line);padding-top:6px;margin-top:2px}
+#msg{font-size:13px;color:var(--mut);min-height:1.2em}
+.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.hr{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:9px 0}
+.hr small{color:var(--mut)}
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#0a0a0b;--card:#151517;--ink:#f2f2f3;--mut:#a1a1a8;--line:#2d2d32;--navy:#e11d2a;--on:#fff;--soft:#26121486;color-scheme:dark}
+header{background:#000;border-bottom:4px solid #e11d2a}
+header h1{color:#fff}header h1::before{content:"";display:inline-block;width:10px;height:22px;background:#e11d2a;margin-right:10px;vertical-align:-3px}
+section{border-top:3px solid #e11d2a}
+button:hover{background:#e11d2a;color:#fff}
+.tot{border:1px solid #3a1519}.hr .bt{display:flex;gap:6px}.hr button{padding:5px 9px;font-size:13px}
+</style>
+</head>
+<body>
+<header><h1>Pembuat Quotation</h1><p>Isi formulir, lalu unduh sebagai PDF dengan format penawaran resmi.</p></header>
+<main>
+<section><h2>1. Data perusahaan Anda</h2>
+<div class="g">
+<label>Nama perusahaan<input id="co_name"></label>
+<label>Telepon<input id="tel"></label>
+<label>Mobile / WhatsApp<input id="mob"></label>
+<label>Email<input id="email"></label>
+<label>Website<input id="web"></label>
+<label>Logo (opsional)<input id="logo" type="file" accept="image/*"></label>
+</div>
+<label style="margin-top:10px">Alamat (satu baris per baris alamat)<textarea id="co_addr" rows="3"></textarea></label>
+</section>
+
+<section><h2>2. Informasi penawaran</h2>
+<div class="g">
+<label>No. quotation<input id="qno"></label>
+<label>Tanggal<input id="qdate" type="date"></label>
+<label>Format PDF<select id="fmt"><option value="1">Format 1 - Tabel lengkap (seperti contoh DJI)</option><option value="2">Format 2 - Minimalis (Item, Quantity, Rate, Amount)</option></select></label>
+<label>Pengaturan PPN<select id="ppnMode"><option value="add">PPN ditambahkan di akhir</option><option value="none">Tanpa PPN</option></select></label>
+<label>PPN (%)<input id="ppn" type="number" min="0" step="0.1" value="11"></label>
+</div>
+<label style="margin-top:10px">Ditujukan kepada (Attention)<textarea id="attn" rows="2"></textarea></label>
+</section>
+
+<section><h2>3. Produk</h2>
+<label class="chk" style="margin-bottom:12px"><input type="checkbox" id="useDisc" checked> Pakai harga SRP dan harga diskon (Format 2 memakai harga diskon sebagai Rate)</label>
+<div id="items"></div>
+<button id="add" type="button">+ Tambah produk</button>
+</section>
+
+<section><h2>4. Syarat dan penandatangan</h2>
+<label>Quotation Notes and Terms<textarea id="terms" rows="6"></textarea></label>
+<div class="g" style="margin-top:10px">
+<label>Nama penandatangan<input id="signer"></label>
+<label>Jabatan<input id="signTitle"></label>
+</div>
+</section>
+
+<section><h2>Ringkasan</h2>
+<div class="tot" id="sum"></div>
+<div class="bar" style="margin-top:14px"><button class="p" id="go" type="button">Unduh PDF</button><button id="save" type="button">Simpan ke database</button><span id="msg"></span></div>
+</section>
+
+<section><h2>Riwayat quotation (database)</h2>
+<div class="bar" style="margin-bottom:6px"><input id="q" placeholder="Cari nomor atau nama pelanggan..." style="flex:1;min-width:200px"><button id="newq" type="button">Quotation baru</button><button id="exp" type="button">Ekspor</button><button id="impb" type="button">Impor</button><input id="imp" type="file" accept=".json" hidden></div>
+<div id="hist"></div>
+<div id="dbs" style="font-size:12px;color:var(--mut);margin-top:8px"></div>
+</section>
+</main>
+
+<script src="lib/jspdf.umd.min.js"></script>
+<script src="lib/jspdf.plugin.autotable.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const num=v=>Number(v)||0;
+const fmt=n=>Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const fmtD=n=>{const v=Math.round(n*100)/100,i=Math.trunc(v);return fmt(i)+','+String(Math.round(Math.abs(v-i)*100)).padStart(2,'0')};
+const ln=(p,q)=>Math.round(num(p)*num(q));
+const BLN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const dlong=s=>{const a=(s||'').split('-');return a.length===3?`${+a[2]} ${BLN[+a[1]-1]} ${a[0]}`:''};
+const DESC="Specification :\n- Fitur utama 1\n- Fitur utama 2\n\nIn The Box :\n1x Unit utama\n1x Kabel dan charger\n\nNote:\nGaransi sesuai ketentuan produsen";
+const TERMS="1. Prices are in Indonesian Rupiah (IDR) and exclude PPN unless stated otherwise.\n2. This quotation is valid for 14 days from the date above.\n3. Payment terms: 100% before delivery.\n4. Delivery: 7-14 working days after payment is received.\n5. Warranty follows the manufacturer's terms and conditions.";
+const F=['co_name','tel','mob','email','web','co_addr','qno','qdate','ppn','attn','terms','signer','signTitle'];
+const COMPANY=['ppnMode','fmt','co_name','tel','mob','email','web','co_addr','signer','signTitle','terms'];
+const defaults={co_name:'PT. Nama Perusahaan Anda',tel:'(021) 0000 0000',mob:'0812 0000 0000',email:'sales@perusahaananda.com',web:'www.perusahaananda.com',co_addr:'Jl. Contoh No. 1\nJakarta 12310\nIndonesia',attn:'CV Nama Pelanggan',terms:TERMS,signer:'Nama Anda',signTitle:'Sales Manager'};
+let items=[{p:'Nama Produk',d:DESC,srp:10000000,disc:9000000,q:1}];
+let logo=null;
+
+(function init(){
+  const d=new Date(),p=n=>String(n).padStart(2,'0');
+  const ymd=`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+  Object.entries(defaults).forEach(([k,v])=>$(k).value=v);
+  $('qdate').value=ymd;
+  $('qno').value=`QUO${ymd.replace(/-/g,'')}-001`;
+  try{
+    const s=JSON.parse(localStorage.getItem('qt_company')||'null');
+    if(s){COMPANY.forEach(k=>{if(s[k]!=null)$(k).value=s[k]});logo=s.logo||null}
+  }catch(e){}
+  renderItems();
+})();
+
+function saveCo(){try{const o={logo};COMPANY.forEach(k=>o[k]=$(k).value);localStorage.setItem('qt_company',JSON.stringify(o))}catch(e){}}
+
+function renderItems(){
+  const dm=$('useDisc').checked;
+  $('items').innerHTML=items.map((it,i)=>`<div class="item"><div class="ih"><b>Produk ${i+1}</b>${items.length>1?`<button type="button" data-del="${i}">Hapus</button>`:''}</div>
+  <label>Nama produk<input data-i="${i}" data-k="p" value="${esc(it.p)}"></label>
+  <label>Deskripsi (judul seperti Specification :, In The Box :, Note: otomatis dicetak tebal)<textarea rows="8" data-i="${i}" data-k="d">${esc(it.d)}</textarea></label>
+  <div class="g"><label>${dm?'Harga SRP (Rp.)':'Harga satuan (Rp.)'}<input type="number" min="0" data-i="${i}" data-k="srp" value="${it.srp}"></label>
+  ${dm?`<label>Harga diskon (Rp.)<input type="number" min="0" data-i="${i}" data-k="disc" value="${it.disc}"></label>`:''}
+  <label>Qty<input type="number" min="1" data-i="${i}" data-k="q" value="${it.q}"></label></div></div>`).join('');
+  calc();
+}
+
+function totals(){
+  const dm=$('useDisc').checked,add=$('ppnMode').value==='add',r=num($('ppn').value)/100;
+  const a=items.reduce((s,it)=>s+ln(it.srp,it.q),0);
+  const b=items.reduce((s,it)=>s+ln(it.disc,it.q),0);
+  const t=dm?[a,b]:[a];
+  const ppn=t.map(x=>add?Math.round(x*r):0);
+  return {dm,mode:add?'add':'none',t,ppn,gt:t.map((x,i)=>x+ppn[i])};
+}
+function calc(){
+  const o=totals();
+  const row=(l,arr,c)=>`<div class="${c||''}"><span>${l}</span><span>${arr.map(fmt).join(' / ')}</span></div>`;
+  $('ppn').disabled=o.mode==='none';
+  const k=o.dm?1:0,rp=n=>'Rp. '+fmt(n),R=(l,v,c)=>`<div class="${c||''}"><span>${l}</span><span>${rp(v)}</span></div>`;
+  const ls=items.map((it,i)=>`<div style="color:var(--mut);font-size:13px"><span>${i+1}. ${esc(it.p||'(tanpa nama)')} \u00d7 ${num(it.q)}</span><span>${rp(ln(k?it.disc:it.srp,it.q))}</span></div>`).join('');
+  const wn=o.dm&&items.some(it=>num(it.disc)>num(it.srp))?'<div style="color:#ff5a5a"><span>Perhatian: ada harga diskon di atas harga SRP.</span></div>':'';
+  $('sum').innerHTML=ls+wn+(o.dm?R('Total harga SRP',o.t[0]):'')+R(o.dm?'Subtotal (setelah diskon)':'Subtotal',o.t[k])+(o.mode==='add'?R('PPN '+num($('ppn').value)+'%',o.ppn[k]):'')+R('Total',o.gt[k],'gt');
+}
+
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset.k){items[t.dataset.i][t.dataset.k]=t.type==='number'?num(t.value):t.value;calc()}
+  else if(t.id==='ppn'||t.id==='ppnMode')calc();
+  if(COMPANY.includes(t.id))saveCo();
+});
+document.addEventListener('click',e=>{
+  const d=e.target.dataset.del;
+  if(d!=null){items.splice(+d,1);renderItems()}
+});
+$('add').onclick=()=>{items.push({p:'',d:'',srp:0,disc:0,q:1});renderItems()};
+$('useDisc').onchange=renderItems;
+$('logo').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{const im=new Image();im.onload=()=>{
+    const s=Math.min(1,600/im.width),c=document.createElement('canvas');
+    c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    logo={data:c.toDataURL('image/png'),w:c.width,h:c.height};saveCo();
+  };im.src=rd.result};
+  rd.readAsDataURL(f);
+};
+
+function logoDim(maxH,maxW){if(!logo)return{w:0,h:0};let h=maxH,w=h*logo.w/logo.h;if(w>maxW){w=maxW;h=w*logo.h/logo.w}return{w,h}}
+function buildPDF(FS){FS=FS||8;
+  const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210,H=297,M=10,o=totals(),dm=o.dm,NAVY=[0,43,102],BLUE=[201,217,245];
+  const [Y,Mo,D]=$('qdate').value.split('-');
+  doc.setTextColor(0);
+  doc.setFont('helvetica','bold').setFontSize(13).text('QUOTATION',W/2,16,{align:'center'});
+  const LD=logoDim(28,65);if(logo)doc.addImage(logo.data,'PNG',W-M-LD.w,6,LD.w,LD.h);
+  // left info
+  doc.setFontSize(9);let y=28;
+  [['No.',$('qno').value],['Date',dlong($('qdate').value)],['Tel',$('tel').value],['Mobile',$('mob').value],['Email',$('email').value],['Website',$('web').value]].forEach(([l,v])=>{
+    if(!v)return;doc.setFont('helvetica','normal').text(l,M,y);doc.text(': '+v,M+22,y);y+=5.2});
+  // right company
+  let ry=Math.max(28,LD.h?6+LD.h+6:0);
+  doc.setFont('helvetica','bold').text($('co_name').value,W-M,ry,{align:'right'});ry+=5.2;
+  doc.setFont('helvetica','normal');
+  $('co_addr').value.split('\n').filter(Boolean).forEach(l=>{doc.text(l,W-M,ry,{align:'right'});ry+=5.2});
+  ry=Math.max(ry,y)+4;
+  doc.setFont('helvetica','bold').text('Attention:',W-M,ry,{align:'right'});ry+=5.2;
+  doc.setFont('helvetica','normal');
+  $('attn').value.split('\n').filter(Boolean).forEach(l=>{doc.text(l,W-M,ry,{align:'right'});ry+=5.2});
+  const startY=ry+3;
+  // columns
+  const bp=o.mode==='add'?'\nBefore PPN':'',bq=o.mode==='add'?' Before PPN':'';
+  const head=dm?['No.','Product','Description','SRP Price'+bp+'\n(Rp.)','Discounted Price'+bp+'\n(Rp.)','Qty','Total Price'+bp+'\n(Rp.)','Total Discounted\nPrice'+bq+'\n(Rp.)']
+               :['No.','Product','Description','Unit Price'+bp+'\n(Rp.)','Qty','Total Price'+bp+'\n(Rp.)'];
+  const widths=dm?[7,23,61,21,21,9,22,26]:[8,32,80,26,10,34];
+  const body=items.map((it,i)=>{const q=num(it.q);
+    return dm?[i+1,it.p,it.d,fmt(num(it.srp)),fmt(num(it.disc)),q,fmt(ln(it.srp,q)),fmt(ln(it.disc,q))]
+             :[i+1,it.p,it.d,fmt(num(it.srp)),q,fmt(ln(it.srp,q))]});
+  const cs={};
+  widths.forEach((w,i)=>cs[i]={cellWidth:w,halign:i===2?'left':(i===1||i===0||head[i]==='Qty')?'center':'right'});
+  cs[2].valign='top';
+  doc.autoTable({
+    startY,margin:{left:M,right:M},head:[head],body,theme:'grid',columnStyles:cs,rowPageBreak:'avoid',
+    styles:{fontSize:FS,textColor:0,lineColor:0,lineWidth:.2,valign:'middle',cellPadding:{top:2,bottom:4,left:2,right:2}},
+    headStyles:{fillColor:NAVY,textColor:255,halign:'center',fontStyle:'bold',fontSize:Math.min(FS,7),cellPadding:1.2},
+    willDrawCell(d){if(d.section==='body'&&d.column.index===2){d.cell._l=d.cell.text.slice();d.cell.text=[]}},
+    didDrawCell(d){
+      if(d.section!=='body'||d.column.index!==2)return;
+      const c=d.cell,lines=c._l||[];
+      const fs=FS,lh=fs*0.3528*1.15;let mode='n';
+      doc.setFontSize(fs);
+      lines.forEach((ln,i)=>{
+        if(/^\s*(specification|in the box|note)\s*:/i.test(ln))mode=/^\s*note/i.test(ln)?'note':'h';
+        else if(!ln.trim())mode='n';
+        const st=mode==='h'?'bold':mode==='note'?'italic':'normal';
+        doc.setFont('helvetica',mode==='note'&&/^\s*note\s*:/i.test(ln)?'bolditalic':st);
+        doc.text(ln,c.x+2,c.y+2+fs*0.3528*0.85+i*lh);
+        if(mode==='h')mode='n';
+      });
+      doc.setFont('helvetica','normal');
+    }
+  });
+  // totals
+  const vw=dm?[22,26]:[34],after=widths.slice(3).reduce((a,b)=>a+b,0),lw=after-vw.reduce((a,b)=>a+b,0),tw=after;
+  const row=(l,arr)=>[l,...arr.map(fmt)];
+  const add=o.mode==='add',trows=add?[row('TOTAL',o.t),row('PPN '+num($('ppn').value)+'%',o.ppn),row('GRAND TOTAL',o.gt)]:[row('TOTAL',o.t)];
+  const tcs={0:{cellWidth:lw,halign:'right',fontStyle:'bold'}};vw.forEach((w,i)=>tcs[i+1]={cellWidth:w,halign:'right'});
+  doc.autoTable({
+    startY:doc.lastAutoTable.finalY,margin:{left:W-M-tw,right:M},tableWidth:tw,body:trows,theme:'grid',columnStyles:tcs,
+    styles:{fontSize:9,textColor:0,fillColor:BLUE,lineColor:NAVY,lineWidth:.2,cellPadding:1.8},
+    didParseCell(d){if(d.row.index===trows.length-1)d.cell.styles.fontStyle='bold'}
+  });
+  // terms + signature
+  let ty=doc.lastAutoTable.finalY+9;
+  const tl=doc.splitTextToSize($('terms').value,W-2*M-80);
+  if(ty+Math.max(tl.length*4.4+8,40)>H-12){doc.addPage();ty=18}
+  doc.setFont('helvetica','bold').setFontSize(9.5).text('Quotation Notes & Terms:',M,ty);
+  doc.setFont('helvetica','normal').setFontSize(9).text(tl,M,ty+5.5,{lineHeightFactor:1.3});
+  const sx=W-M-35;
+  doc.setFontSize(9.5).text('Sincerely,',sx,ty,{align:'center'});
+  doc.setFont('helvetica','bold').text($('signer').value,sx,ty+26,{align:'center'});
+  doc.setFont('helvetica','normal').text($('signTitle').value,sx,ty+31,{align:'center'});
+  doc.text($('co_name').value,sx,ty+36,{align:'center'});
+  const n=doc.getNumberOfPages();
+  for(let i=1;i<=n;i++){doc.setPage(i);doc.setFontSize(8).setTextColor(120).text(`Page ${i} of ${n}`,W/2,H-6,{align:'center'})}
+  return doc;
+}
+
+function buildPDF2(FS){
+  FS=FS||8;
+  const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210,H=297,M=14,INK=[40,40,40],GR=[125,125,125],BAR=[69,69,69],o=totals(),k=o.dm?1:0;
+  const money=n=>'Rp. '+fmtD(n);
+  const [Y,Mo,D]=$('qdate').value.split('-');
+  const T=(s,x,y,al,st,col)=>{doc.setFont('helvetica',st||'normal').setTextColor(...(col||INK));doc.text(String(s),x,y,{align:al||'left'})};
+  doc.setFontSize(20);T('QUOTATION',M,22,'left','bold');
+  const LD=logoDim(28,65);if(logo)doc.addImage(logo.data,'PNG',W-M-LD.w,7,LD.w,LD.h);
+  doc.setFontSize(9);
+  let y=34;
+  [['Quotation No.',$('qno').value],['Date',dlong($('qdate').value)]].forEach(([l,v])=>{T(l,M,y,'left','normal',GR);T(v,M+30,y);y+=5.2});
+  y+=3;T('BILL TO',M,y,'left','bold',GR);y+=5.2;
+  $('attn').value.split('\n').filter(Boolean).forEach(l=>{T(l,M,y);y+=5});
+  let ry=Math.max(34,LD.h?7+LD.h+7:0);T($('co_name').value,W-M,ry,'right','bold');ry+=5.2;
+  [...$('co_addr').value.split('\n'),$('tel').value&&'Tel: '+$('tel').value,$('mob').value&&'Mobile: '+$('mob').value,$('email').value,$('web').value].filter(Boolean).forEach(l=>{T(l,W-M,ry,'right');ry+=5});
+  const Y0=Math.max(y,ry)+5;
+  doc.setFillColor(...BAR);doc.roundedRect(M,Y0,W-2*M,9,1.5,1.5,'F');
+  doc.setFontSize(9);const WH=[255,255,255];
+  T('Item',M+4,Y0+6,'left','normal',WH);T('Quantity',110,Y0+6,'left','normal',WH);T('Rate',160,Y0+6,'right','normal',WH);T('Amount',192,Y0+6,'right','normal',WH);
+  const body=items.map(it=>{const q=num(it.q),r=num(k?it.disc:it.srp);return [(it.p?it.p+'\n':'')+it.d,q,money(r),money(ln(r,q))]});
+  doc.autoTable({startY:Y0+11,margin:{left:M,right:M},body,theme:'plain',rowPageBreak:'avoid',
+    columnStyles:{0:{cellWidth:92},1:{cellWidth:24},2:{cellWidth:34,halign:'right'},3:{cellWidth:32,halign:'right'}},
+    styles:{fontSize:FS,textColor:INK,valign:'top',cellPadding:{top:3,bottom:5,left:4,right:4}},
+    willDrawCell(d){if(d.section==='body'&&d.column.index===0){d.cell._l=d.cell.text.slice();d.cell.text=[]}},
+    didDrawCell(d){
+      if(d.section!=='body')return;
+      const c=d.cell;
+      doc.setDrawColor(225,225,225).setLineWidth(.2).line(c.x,c.y+c.height,c.x+c.width,c.y+c.height);
+      if(d.column.index!==0)return;
+      const it=items[d.row.index];doc.setFontSize(FS);doc.setFont('helvetica','normal');
+      const pL=it.p?doc.splitTextToSize(it.p,c.width-8).length:0,lh=FS*0.3528*1.15;let mode='n';
+      (c._l||[]).forEach((ln,i)=>{
+        let st='normal';
+        if(i<pL)st='bold';
+        else{
+          if(/^\s*(specification|in the box|note)\s*:/i.test(ln))mode=/^\s*note/i.test(ln)?'note':'h';
+          else if(!ln.trim())mode='n';
+          st=mode==='h'?'bold':mode==='note'?(/^\s*note\s*:/i.test(ln)?'bolditalic':'italic'):'normal';
+          if(mode==='h')mode='n';
+        }
+        T(ln,c.x+4,c.y+3+FS*0.3528*0.85+i*lh,'left',st);
+      });
+    }
+  });
+  const tl=doc.splitTextToSize($('terms').value,W-2*M-80);
+  let ty=doc.lastAutoTable.finalY+8;
+  if(ty+30+Math.max(tl.length*4.4+8,40)>H-12){doc.addPage();ty=20}
+  doc.setFontSize(9.5);
+  const TR=o.mode==='add'?[['Subtotal:',o.t[k]],['Tax ('+num($('ppn').value)+'%):',o.ppn[k]],['Total:',o.gt[k]]]:[['Total:',o.gt[k]]];
+  TR.forEach(([l,v],i)=>{
+    T(l,156,ty+i*7,'right','normal',GR);T(money(v),192,ty+i*7,'right',i===TR.length-1?'bold':'normal')});
+  ty+=TR.length*7+9;
+  T('Quotation Notes & Terms:',M,ty,'left','bold');
+  doc.setFontSize(9);doc.setFont('helvetica','normal').setTextColor(...INK).text(tl,M,ty+5.5,{lineHeightFactor:1.3});
+  const sx=W-M-32;
+  doc.setFontSize(9.5);T('Sincerely,',sx,ty,'center');T($('signer').value,sx,ty+26,'center','bold');T($('signTitle').value,sx,ty+31,'center');T($('co_name').value,sx,ty+36,'center');
+  const n=doc.getNumberOfPages();
+  for(let i=1;i<=n;i++){doc.setPage(i);doc.setFontSize(8).setTextColor(120).text(`Page ${i} of ${n}`,W/2,H-6,{align:'center'})}
+  return doc;
+}
+
+const FLD=['ppnMode','fmt','co_name','tel','mob','email','web','co_addr','qno','qdate','ppn','attn','terms','signer','signTitle'];
+let recs=[],store=null;
+const rid=n=>(n||'tanpa-nomor').replace(/[^\w.~:@+-]/g,'_').slice(0,150);
+const clone=o=>JSON.parse(JSON.stringify(o));
+function lsRead(){try{return JSON.parse(localStorage.getItem('qt_db')||'{}')}catch(e){return{}}}
+function lsWrite(o){try{localStorage.setItem('qt_db',JSON.stringify(o))}catch(e){}}
+function setRecs(a){recs=a.sort((x,y)=>(y.savedAt||0)-(x.savedAt||0));drawHist()}
+function lsLoad(){setRecs(Object.entries(lsRead()).map(([id,r])=>({id,...r})))}
+function mkRec(){
+  const o=totals(),f={};FLD.forEach(k=>f[k]=$(k).value);
+  return {qno:$('qno').value,date:$('qdate').value,cust:($('attn').value.split('\n')[0]||'').trim(),total:o.gt[o.gt.length-1],fmt:$('fmt').value,savedAt:Date.now(),s:{f,items:clone(items),dm:$('useDisc').checked}};
+}
+async function saveRec(auto){
+  const r=mkRec(),id=rid(r.qno),m=$('dbs');
+  try{
+    if(store)await store.collection('quotations').doc(id).set(r);
+    else{const o=lsRead();o[id]=r;lsWrite(o);lsLoad()}
+    m.textContent=(auto?'Tersimpan otomatis ke database: ':'Tersimpan ke database: ')+r.qno;
+  }catch(e){
+    const o=lsRead();o[id]=r;lsWrite(o);
+    m.textContent='Database online gagal ('+(e&&e.code||'error')+'); disimpan di browser ini saja.';
+  }
+}
+function loadRec(r){
+  const s=r.s;FLD.forEach(k=>{if(s.f[k]!=null)$(k).value=s.f[k]});
+  items=clone(s.items);$('useDisc').checked=s.dm;renderItems();$('dbs').textContent='Dimuat: '+r.qno;
+}
+function drawHist(){
+  const q=$('q').value.toLowerCase();
+  const a=recs.filter(r=>((r.qno||'')+' '+(r.cust||'')).toLowerCase().includes(q));
+  $('hist').innerHTML=a.length?a.map(r=>`<div class="hr"><div><b>${esc(r.qno)}</b> <small>${esc(dlong(r.date))} · Format ${esc(r.fmt)}</small><br><small>${esc(r.cust||'-')} · Rp. ${fmt(r.total||0)}</small></div><div class="bt"><button type="button" data-ld="${esc(r.id)}">Muat</button><button type="button" data-pdf="${esc(r.id)}">Unduh PDF</button><button type="button" data-rm="${esc(r.id)}">Hapus</button></div></div>`).join(''):'<small>Belum ada quotation tersimpan.</small>';
+}
+document.addEventListener('click',async e=>{
+  const t=e.target,id=t.dataset.ld||t.dataset.pdf||t.dataset.rm;if(!id)return;
+  const r=recs.find(x=>x.id===id);if(!r)return;
+  if(t.dataset.rm){
+    if(!t.dataset.arm){t.dataset.arm='1';t.textContent='Yakin hapus?';setTimeout(()=>{delete t.dataset.arm;t.textContent='Hapus'},4000);return}
+    try{if(store)await store.collection('quotations').doc(id).delete();else{const o=lsRead();delete o[id];lsWrite(o);lsLoad()}$('dbs').textContent='Dihapus: '+r.qno}
+    catch(err){$('dbs').textContent='Gagal menghapus ('+(err&&err.code||'error')+')'}
+    return;
+  }
+  loadRec(r);window.scrollTo(0,0);
+  if(t.dataset.pdf)$('go').click();
+});
+$('q').oninput=drawHist;
+$('save').onclick=()=>saveRec(false);
+$('newq').onclick=()=>{
+  const d=new Date(),p=n=>String(n).padStart(2,'0'),ymd=`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+  const pre='QUO'+ymd.replace(/-/g,'');
+  const n=recs.filter(r=>(r.qno||'').startsWith(pre)).length+1;
+  $('qdate').value=ymd;$('qno').value=pre+'-'+String(n).padStart(3,'0');$('attn').value='';
+  items=[{p:'',d:'',srp:0,disc:0,q:1}];renderItems();window.scrollTo(0,0);
+};
+$('exp').onclick=()=>{const b=new Blob([JSON.stringify(lsRead(),null,1)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='riwayat-quotation.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+$('impb').onclick=()=>$('imp').click();
+$('imp').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{lsWrite({...lsRead(),...JSON.parse(t)});lsLoad();$('dbs').textContent='Riwayat berhasil diimpor.'}catch(x){$('dbs').textContent='File impor tidak valid.'}});e.target.value=''};
+lsLoad();
+$('dbs').textContent='Riwayat tersimpan di browser ini. Gunakan Ekspor/Impor untuk memindahkan ke perangkat lain.';
+
+$('go').onclick=()=>{
+  const m=$('msg');m.textContent='Membuat PDF...';
+  let doc;
+  try{
+    if(!window.jspdf||!window.jspdf.jsPDF){m.textContent='Library PDF belum termuat. Periksa koneksi internet lalu muat ulang halaman.';return}
+    for(const fs of [8,7.5,7,6.5,6]){doc=($('fmt').value==='2'?buildPDF2:buildPDF)(fs);if(items.length>1||doc.getNumberOfPages()===1)break}
+  }catch(err){m.textContent='Gagal menyusun PDF: '+(err&&err.message||err);console.error(err);return}
+  const name='Quotation_'+($('qno').value||'draft').replace(/[^\w.-]+/g,'_')+'.pdf';
+  try{
+    doc.save(name);
+    m.textContent='PDF siap: '+name;saveRec(true);
+  }catch(err){
+    m.textContent='Gagal menyimpan PDF: '+(err&&err.message||err);
+  }
+};
+</script>
+</body>
+</html>
