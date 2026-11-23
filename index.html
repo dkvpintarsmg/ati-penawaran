@@ -291,8 +291,8 @@ function buildPDF2(FS){
       const c=d.cell;
       doc.setDrawColor(225,225,225).setLineWidth(.2).line(c.x,c.y+c.height,c.x+c.width,c.y+c.height);
       if(d.column.index!==0)return;
-      const it=items[d.row.index];doc.setFontSize(FS);doc.setFont('helvetica','normal');
-      const pL=it.p?doc.splitTextToSize(it.p,c.width-8).length:0,lh=FS*0.3528*1.15;let mode='n';
+      const it=items[d.row.index]||{p:''};doc.setFontSize(FS);doc.setFont('helvetica','normal');
+      const ps=it.p?doc.splitTextToSize(it.p,c.width-8):[],pL=(ps.length&&(c._l||[])[0]===ps[0])?ps.length:0,lh=FS*0.3528*1.15;let mode='n';
       (c._l||[]).forEach((ln,i)=>{
         let st='normal';
         if(i<pL)st='bold';
